@@ -13,4 +13,4 @@ appdata: /opt/appdata
 downloads: /mnt/nfs/downloads
 media: /mnt/nfs/media
 
-certbot_email: paul@bovbel.com
+ansible_user_email: paul@bovbel.com
