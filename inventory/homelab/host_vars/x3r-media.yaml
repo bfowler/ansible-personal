@@ -5,7 +5,7 @@ nfs_mounts:
   - mount: /mnt/nfs/backup
     url: x3r-freenas:/mnt/storage/backup
 
-appdata: /opt/appdata
+appdata: /mnt/appdata
 downloads: /mnt/nfs/downloads
 media: /mnt/nfs/media
 
