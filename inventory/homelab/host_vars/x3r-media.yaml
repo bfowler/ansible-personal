@@ -9,4 +9,9 @@ appdata: /mnt/appdata
 downloads: /mnt/nfs/media/downloads
 media: /mnt/nfs/media
 
+aws_ddns_hosted_zone: ZJMZZCLW5S6T9
+aws_ddns_hosted_records:
+  - home.bovbel.com
+  - router.bovbel.com
+
 ansible_user_email: paul@bovbel.com
