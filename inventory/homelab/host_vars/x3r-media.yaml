@@ -1,13 +1,19 @@
 ansible_user: pbovbel
-nfs_mounts:
-  - mount: /mnt/nfs/media
-    url: x3r-nas:/mnt/storage/media
-  - mount: /mnt/nfs/backup
-    url: x3r-nas:/mnt/storage/backup
 
-appdata: /mnt/appdata
+# appdata: &appdata /mnt/nfs/applications
+appdata: &appdata /mnt/appdata
+media: &media /mnt/nfs/media
+backup: &backup /mnt/nfs/backup
+
 downloads: /mnt/nfs/media/downloads
-media: /mnt/nfs/media
+
+nfs_mounts:
+  - mount: *media
+    url: x3r-nas:/mnt/storage/media
+  - mount: *backup
+    url: x3r-nas:/mnt/storage/backup
+  # - mount: *appdata
+  #   url: x3r-nas:/mnt/storage/applications
 
 aws_ddns_hosted_zone: ZJMZZCLW5S6T9
 aws_ddns_hosted_records:
