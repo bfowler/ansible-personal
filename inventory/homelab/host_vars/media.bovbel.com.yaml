@@ -1,10 +1,10 @@
 ansible_user: pbovbel
-ansible_user_email: paul@bovbel.com
+ansible_email: paul@bovbel.com
 
-nas_host: nas.bovbel.com
-
+# Route53 hosted zone
 aws_ddns_hosted_zone: ZJMZZCLW5S6T9
 
+# Internal hostnames to expose over HTTP proxy and bind to Route53
 public_hosts:
   - router.bovbel.com
   - metal.bovbel.com
@@ -13,22 +13,24 @@ public_hosts:
   - octopi.bovbel.com
   - tower.bovbel.com
 
-nfs_root: /mnt/nfs
-appdata: /mnt/appdata
-media: "{{ nfs_root }}/media"
-backup: "{{ nfs_root }}/backup"
+# NFS client configuration
+data_folder: /mnt/nfs
+appdata_folder: /mnt/appdata
+media_folder: "{{ data_folder }}/media"
+backup_folder: "{{ data_folder }}/backup"
+download_folder: "{{ media_folder }}/downloads"
 
-downloads: /mnt/nfs/media/downloads
-
+nfs_host: nas.bovbel.com
 nfs_mounts:
-  - mount: "{{ media }}"
-    url: "{{ nas_host }}:/mnt/storage/media"
-  - mount: "{{ backup }}"
-    url: "{{ nas_host }}:/mnt/storage/backup"
+  - mount: "{{ media_folder }}"
+    url: "{{ nfs_host }}:/mnt/storage/media"
+  - mount: "{{ backup_folder }}"
+    url: "{{ nfs_host }}:/mnt/storage/backup"
 
+# Samba server configuration
 samba_shares:
-  - "{{ media }}"
-  - "{{ backup }}"
+  - "{{ media_folder }}"
+  - "{{ backup_folder }}"
 
 samba_password: !vault |
   $ANSIBLE_VAULT;1.1;AES256
@@ -65,7 +67,6 @@ web_password: !vault |
 
 smtp_server: smtp.gmail.com
 smtp_port: 587
-ansible_email: paul@bovbel.com
 gmail_access_key: !vault |
   $ANSIBLE_VAULT;1.1;AES256
   32653332643230363831396636393963636661303435396637663237313131303032613362336465
