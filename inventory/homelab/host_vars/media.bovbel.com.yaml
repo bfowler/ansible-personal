@@ -11,6 +11,7 @@ public_hosts:
   - media.bovbel.com
   - nas.bovbel.com
   - octopi.bovbel.com
+  - tower.bovbel.com
 
 nfs_root: /mnt/nfs
 appdata: /mnt/appdata
