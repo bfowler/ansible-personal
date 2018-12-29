@@ -12,6 +12,8 @@ public_hosts:
   - nas.bovbel.com
   - octopi.bovbel.com
   - tower.bovbel.com
+  - arthur-cam.bovbel.com
+  - door-cam.bovbel.com
 
 # NFS client configuration
 data_folder: /mnt/nfs
