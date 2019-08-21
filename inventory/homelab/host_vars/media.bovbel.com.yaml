@@ -1,49 +1,23 @@
 ansible_user: pbovbel
 ansible_email: paul@bovbel.com
 
-# Internal hostnames to expose over HTTP proxy and bind to Route53
-# public_hosts:
-#   - router.bovbel.com
-#   - metal.bovbel.com
-#   - media.bovbel.com
-#   - nas.bovbel.com
-#   - octopi.bovbel.com
-#   - tower.bovbel.com
-#   - arthur-cam.bovbel.com
-#   - door-cam.bovbel.com
+admin_users:
+  - paul@bovbel.com
 
-# NFS client configuration
+share_users:
+  - eugene.tkach@gmail.com
+  - igorlitvinov@gmail.com
+
+# Useful paths
 data_folder: /mnt/storage
 app_folder: "{{ data_folder }}/app"
 media_folder: "{{ data_folder }}/media"
 backup_folder: "{{ data_folder }}/backup"
 download_folder: "{{ media_folder }}/downloads"
 
-# nfs_host: nas.bovbel.com
-# nfs_mounts:
-#   - mount: "{{ media_folder }}"
-#     url: "{{ nfs_host }}:/mnt/storage/media"
-#   - mount: "{{ backup_folder }}"
-#     url: "{{ nfs_host }}:/mnt/storage/backup"
-
-# # Samba server configuration
-# samba_shares:
-#   - "{{ media_folder }}"
-#   - "{{ backup_folder }}"
-
-# samba_password: !vault |
-#   $ANSIBLE_VAULT;1.1;AES256
-#   61356166363538343861623064366663376364666161393064663837633230633234666662353438
-#   3430333765393465373138313331666234373030396136310a623035353430633233303661616637
-#   65613538366335383634313938386638663035366338326434393730623462393764636166383839
-#   3563373232313037350a643565376630303137363066316133346636613038326233393438313362
-#   6533
-
-# Route53 hosted zone
+# Route53 DDNS configuration
 aws_ddns_hosted_zone: ZJMZZCLW5S6T9
-
 aws_access_key_id: AKIA2MCQ5AI3ATQ5HA75
-
 aws_secret_access_key: !vault |
   $ANSIBLE_VAULT;1.1;AES256
   63373362643230396364306438653862303664393361313861316265366661636438376430346637
@@ -53,6 +27,7 @@ aws_secret_access_key: !vault |
   30396232333537613339386131323238323066316533643137656331383036396631623063386665
   3261356137353061343863346638326539643938323762323763
 
+# Basic auth configuration
 web_user: pbovbel
 web_password: !vault |
   $ANSIBLE_VAULT;1.1;AES256
@@ -62,8 +37,6 @@ web_password: !vault |
   3061656461643865640a643762626633646130666264373137386161653663303331646332343164
   3931
 
-# smtp_server: smtp.gmail.com
-# smtp_port: 587
 gmail_access_key: !vault |
   $ANSIBLE_VAULT;1.1;AES256
   32653332643230363831396636393963636661303435396637663237313131303032613362336465
