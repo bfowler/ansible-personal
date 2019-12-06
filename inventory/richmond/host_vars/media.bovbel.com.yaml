@@ -1,15 +1,39 @@
 ---
+share_users:
+  - eugene.tkach@gmail.com
+  - igorlitvinov@gmail.com
+  - rebecca@bovbel.com
+  - rustedghost@gmail.com
+  - gamask@gmail.com
+  - victorvorobiev@gmail.com
+  - woodward.adam.m@gmail.com
+
+# Useful paths
+data_folder: /mnt/storage
+app_folder: "{{ data_folder }}/app"
+media_folder: "{{ data_folder }}/media"
+backup_folder: "{{ data_folder }}/backup"
+download_folder: "{{ media_folder }}/downloads"
+share_folder: "{{ media_folder }}"
+
+pia_username: p4418147
+pia_password: !vault |
+  $ANSIBLE_VAULT;1.1;AES256
+  36383736346664363437303738626166643838353336633434386135366561383966366130653432
+  3837336163316635386437626434383531666262303538660a626263313439393263653437373335
+  66386534363233316338306539386666303037623931316638346563313331376366613664643065
+  6638343761396139370a623834653464666665326162333936306535646333666261343736346464
+  6262
+
+zfs_pool: storage
+
 docker_compose:
-  version: '3.5'
-  networks:
-    media:
-      name: media
   services:
     ddns:
       container_name: ddns
       image: sjmayotte/route53-dynamic-dns:latest
       networks:
-        - media
+        - apps
       environment:
         - "AWS_ACCESS_KEY_ID={{ aws_access_key_id }}"
         - "AWS_SECRET_ACCESS_KEY={{ aws_secret_access_key }}"
@@ -22,37 +46,11 @@ docker_compose:
         - "SEND_EMAIL_SES=true"
         - "SES_FROM_ADDRESS={{ ansible_email }}"
         - "SES_TO_ADDRESS={{ ansible_email }}"
-    smtp:
-      container_name: smtp
-      image: namshi/smtp
-      networks:
-        - media
-      environment:
-        - "RELAY_NETWORKS=:10.0.0.0/8:172.16.0.0/12:192.168.0.0/16"
-        - "GMAIL_USER={{ ansible_email }}"
-        - "GMAIL_PASSWORD={{ gmail_access_key }}"
-    caddy:
-      build:
-        args:
-          plugins: login,jwt
-        context: github.com/abiosoft/caddy-docker.git
-      container_name: caddy
-      networks:
-        - media
-      ports:
-        - 80:80
-        - 443:443
-      restart: unless-stopped
-      volumes:
-        - /etc/docker/Caddyfile:/etc/Caddyfile:ro
-        - "{{ app_folder }}/caddy:/root/.caddy"
-        - "{{ media_folder }}:/srv/share:ro"
-        - "{{ app_folder }}/caddy/log:/log"
     plex:
       image: plexinc/pms-docker:plexpass
       container_name: plex
       networks:
-        - media
+        - apps
       ports:
         - 32400:32400
       volumes:
@@ -68,7 +66,7 @@ docker_compose:
       image: linuxserver/tautulli
       container_name: tautulli
       networks:
-        - media
+        - apps
       depends_on:
         - plex
       volumes:
@@ -83,7 +81,7 @@ docker_compose:
       image: linuxserver/sonarr
       container_name: sonarr
       networks:
-        - media
+        - apps
       depends_on:
         - jackett
       volumes:
@@ -101,7 +99,7 @@ docker_compose:
       image: linuxserver/radarr
       container_name: radarr
       networks:
-        - media
+        - apps
       depends_on:
         - jackett
       volumes:
@@ -119,7 +117,7 @@ docker_compose:
       image: linuxserver/jackett
       container_name: jackett
       networks:
-        - media
+        - apps
       volumes:
         - "{{ app_folder }}/jackett:/config"
       restart: unless-stopped
@@ -133,7 +131,7 @@ docker_compose:
       cap_add:
         - NET_ADMIN
       networks:
-        - media
+        - apps
       dns:
         - 8.8.8.8
         - 1.1.1.1
@@ -158,35 +156,11 @@ docker_compose:
         - "TRANSMISSION_DOWNLOAD_DIR=/downloads"
         - "TRANSMISSION_SCRIPT_TORRENT_DONE_ENABLED=true"
         - "TRANSMISSION_SCRIPT_TORRENT_DONE_FILENAME=/config/unpack.sh"
-    resilio:
-      image: linuxserver/resilio-sync
-      container_name: resilio
-      networks:
-        - media
-      ports:
-        - 55555:55555
-        - 55555:55555/udp
-      volumes:
-        - "{{ app_folder }}/resilio:/config"
-        - "{{ data_folder }}:/sync"
-      restart: unless-stopped
-      environment:
-        - "PUID={{ uid }}"
-        - "PGID={{ gid }}"
-        - "TZ=America/Toronto"
-    watchtower:
-      image: containrrr/watchtower
-      container_name: watchtower
-      networks:
-        - media
-      volumes:
-        - /var/run/docker.sock:/var/run/docker.sock
-      restart: unless-stopped
     ombi:
       image: linuxserver/ombi
       container_name: ombi
       networks:
-        - media
+        - apps
       environment:
         - "PUID={{ uid }}"
         - "PGID={{ gid }}"
@@ -196,72 +170,56 @@ docker_compose:
       restart: unless-stopped
 
 caddy:
-  redirect: /dashboard
   endpoints:
+    radarr:
+      type: proxy
+      auth: oauth
+      path: /radarr
+      host: radarr
+      port: 7878
+      users: "{{ admin_users }}"
 
-  - type: proxy
-    auth: oauth
-    path: /radarr
-    host: radarr
-    port: 7878
-    users: "{{ admin_users }}"
+    sonarr:
+      type: proxy
+      auth: oauth
+      path: /sonarr
+      host: sonarr
+      port: 8989
+      users: "{{ admin_users }}"
 
-  - type: proxy
-    auth: oauth
-    path: /sonarr
-    host: sonarr
-    port: 8989
-    users: "{{ admin_users }}"
+    tautulli:
+      type: proxy
+      auth: oauth
+      path: /tautulli
+      host: tautulli
+      port: 8181
+      users: "{{ admin_users }}"
 
-  - type: proxy
-    auth: oauth
-    path: /radarr
-    host: radarr
-    port: 7878
-    users: "{{ admin_users }}"
+    jackett:
+      type: proxy
+      auth: oauth
+      path: /jackett
+      host: jackett
+      port: 9117
+      users: "{{ admin_users }}"
 
-  - type: proxy
-    auth: oauth
-    path: /tautulli
-    host: tautulli
-    port: 8181
-    users: "{{ admin_users }}"
+    ombi:
+      type: proxy
+      auth: null
+      path: /ombi
+      host: ombi
+      port: 3579
+      users: "{{ admin_users + share_users }}"
 
-  - type: proxy
-    auth: oauth
-    path: /jackett
-    host: jackett
-    port: 9117
-    users: "{{ admin_users }}"
+    transmittion:
+      type: proxy
+      auth: basic
+      path: /transmission
+      host: transmission
+      port: 9091
 
-  - type: proxy
-    auth: oauth
-    path: /gui
-    host: resilio
-    port: 8888
-    users: "{{ admin_users }}"
-
-  - type: proxy
-    auth: oauth
-    path: /dashboard
-    host: "{{ ansible_default_ipv4.address }}"
-    port: 9090
-    users: "{{ admin_users }}"
-
-  - type: proxy
-    auth: null
-    path: /ombi
-    host: ombi
-    port: 3579
-    users: "{{ admin_users + share_users }}"
-
-  - type: proxy
-    auth: basic
-    path: /transmission
-    host: transmission
-    port: 9091
-
-  - type: share
-    auth: oauth
-    path: /share
-    users: "{{ admin_users + share_users }}"
+    share:
+      type: share
+      auth: oauth
+      path: /share
+      users: "{{ admin_users + share_users }}"

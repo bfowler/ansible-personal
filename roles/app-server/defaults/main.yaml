@@ -1,19 +1,18 @@
+kernel_options:
+  # disable all mitigations (only works in 5.2+ kernel)
+  - mitigations=off
+  # disable Spectre and Meltdown mitigation (https://wiki.ubuntu.com/SecurityTeam/KnowledgeBase/SpectreAndMeltdown)
+  - nopti noibrs noibpb nospectre_v2 spec_store_bypass_disable=off
+  # disable L1TF mitigations (https://wiki.ubuntu.com/SecurityTeam/KnowledgeBase/L1TF)
+  - l1tf=off
+  # disable MDS mitigations (https://wiki.ubuntu.com/SecurityTeam/KnowledgeBase/MDS)
+  - mds=off
+
 ansible_user: pbovbel
 ansible_email: paul@bovbel.com
 
 admin_users:
   - paul@bovbel.com
-
-share_users:
-  - eugene.tkach@gmail.com
-  - igorlitvinov@gmail.com
-
-# Useful paths
-data_folder: /mnt/storage
-app_folder: "{{ data_folder }}/app"
-media_folder: "{{ data_folder }}/media"
-backup_folder: "{{ data_folder }}/backup"
-download_folder: "{{ media_folder }}/downloads"
 
 # Route53 DDNS configuration
 aws_ddns_hosted_zone: ZJMZZCLW5S6T9
@@ -65,11 +64,79 @@ google_oauth2_client_secret: !vault |
   3736366133653038370a306161666364373237346638663963646539313632326465353037313665
   33386339613734616564383837666166343937356565633236343564643962323166
 
-pia_username: p4418147
-pia_password: !vault |
-  $ANSIBLE_VAULT;1.1;AES256
-  36383736346664363437303738626166643838353336633434386135366561383966366130653432
-  3837336163316635386437626434383531666262303538660a626263313439393263653437373335
-  66386534363233316338306539386666303037623931316638346563313331376366613664643065
-  6638343761396139370a623834653464666665326162333936306535646333666261343736346464
-  6262
+docker_compose:
+  version: '3.5'
+  networks:
+    apps:
+      name: apps
+  services:
+    smtp:
+      container_name: smtp
+      image: namshi/smtp
+      networks:
+        - apps
+      environment:
+        - "RELAY_NETWORKS=:10.0.0.0/8:172.16.0.0/12:192.168.0.0/16"
+        - "GMAIL_USER={{ ansible_email }}"
+        - "GMAIL_PASSWORD={{ gmail_access_key }}"
+    caddy:
+      build:
+        args:
+          plugins: login,jwt
+        context: github.com/abiosoft/caddy-docker.git
+      container_name: caddy
+      networks:
+        - apps
+      ports:
+        - 80:80
+        - 443:443
+      restart: unless-stopped
+      volumes:
+        - /etc/docker/Caddyfile:/etc/Caddyfile:ro
+        - "{{ app_folder }}/caddy:/root/.caddy"
+        - "{{ share_folder }}:/srv/share:ro"
+        - "{{ app_folder }}/caddy/log:/log"
+    watchtower:
+      image: containrrr/watchtower
+      container_name: watchtower
+      networks:
+        - apps
+      volumes:
+        - /var/run/docker.sock:/var/run/docker.sock
+      restart: unless-stopped
+    resilio:
+      image: linuxserver/resilio-sync
+      container_name: resilio
+      networks:
+        - apps
+      ports:
+        - 55555:55555
+        - 55555:55555/udp
+      volumes:
+        - "{{ app_folder }}/resilio:/config"
+        - "{{ data_folder }}:/sync"
+      restart: unless-stopped
+      environment:
+        - "PUID={{ uid }}"
+        - "PGID={{ gid }}"
+        - "TZ=America/Toronto"
+
+caddy:
+  redirect: /dashboard
+  endpoints:
+    dashboard:
+      type: proxy
+      auth: oauth
+      path: /dashboard
+      host: "{{ ansible_default_ipv4.address }}"
+      port: 9090
+      users: "{{ admin_users }}"
+    resilio:
+      type: proxy
+      auth: oauth
+      path: /gui
+      host: resilio
+      port: 8888
+      users: "{{ admin_users }}"
+
+  remotes: {}
