@@ -1,10 +1,13 @@
 ---
 share_users:
+  - deasonst@gmail.com
   - eugene.tkach@gmail.com
+  - gamask@gmail.com
   - igorlitvinov@gmail.com
+  - kyle.coventry@gmail.com
   - rebecca@bovbel.com
   - rustedghost@gmail.com
-  - gamask@gmail.com
+  - ryan.audent@gmail.com
   - victorvorobiev@gmail.com
   - woodward.adam.m@gmail.com
 
@@ -61,6 +64,21 @@ docker_compose:
         - "PLEX_GID={{ gid }}"
         - "TZ=America/Toronto"
         - ADVERTISE_IP=http://{{ ansible_default_ipv4.address }}:32400/
+      restart: unless-stopped
+    jellyfin:
+      image: linuxserver/jellyfin
+      container_name: jellyfin
+      networks:
+        - apps
+      ports:
+        - 8096:8096
+      environment:
+        - "PLEX_UID={{ uid }}"
+        - "PLEX_GID={{ gid }}"
+        - "TZ=America/Toronto"
+      volumes:
+        - "{{ app_folder }}/jellyfin:/config"
+        - "{{ media_folder }}:/data:ro"
       restart: unless-stopped
     tautulli:
       image: linuxserver/tautulli
@@ -187,6 +205,15 @@ caddy:
       port: 8989
       users: "{{ admin_users }}"
 
+    jellyfin:
+      type: proxy
+      auth: null
+      # auth: oauth
+      path: /jellyfin
+      host: jellyfin
+      port: 8096
+      users: "{{ admin_users }}"
+
     tautulli:
       type: proxy
       auth: oauth
@@ -211,7 +238,7 @@ caddy:
       port: 3579
       users: "{{ admin_users + share_users }}"
 
-    transmittion:
+    transmission:
       type: proxy
       auth: basic
       path: /transmission
