@@ -60,6 +60,13 @@ docker_compose:
         ROUTE53_DOMAIN: metal.bovbel.com
 
 caddy:
+  endpoints:
+    share:
+      type: share
+      auth: oauth
+      path: /share
+      users: "{{ admin_users + share_users }}"
+
   remotes:
     franklin:
       host: franklin
@@ -68,6 +75,7 @@ caddy:
       scheme: https
       port: 443
       users: "{{ admin_users }}"
+
     metal:
       host: metal
       domain: bovbel.com
@@ -75,6 +83,7 @@ caddy:
       scheme: https
       port: 443
       users: "{{ admin_users }}"
+
     octopi:
       host: octopi
       domain: bovbel.com

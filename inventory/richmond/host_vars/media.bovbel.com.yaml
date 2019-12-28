@@ -1,16 +1,4 @@
 ---
-share_users:
-  - deasonst@gmail.com
-  - eugene.tkach@gmail.com
-  - gamask@gmail.com
-  - igorlitvinov@gmail.com
-  - kyle.coventry@gmail.com
-  - rebecca@bovbel.com
-  - rustedghost@gmail.com
-  - ryan.audent@gmail.com
-  - victorvorobiev@gmail.com
-  - woodward.adam.m@gmail.com
-
 # Useful paths
 data_folder: /mnt/storage
 app_folder: "{{ data_folder }}/app"
