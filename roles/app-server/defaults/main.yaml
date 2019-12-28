@@ -145,6 +145,11 @@ caddy:
       host: "{{ ansible_default_ipv4.address }}"
       port: 9090
       users: "{{ admin_users }}"
+    share:
+      type: share
+      auth: oauth
+      path: /share
+      users: "{{ admin_users + share_users }}"
     resilio:
       type: proxy
       auth: oauth

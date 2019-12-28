@@ -232,9 +232,3 @@ caddy:
       path: /transmission
       host: transmission
       port: 9091
-
-    share:
-      type: share
-      auth: oauth
-      path: /share
-      users: "{{ admin_users + share_users }}"
