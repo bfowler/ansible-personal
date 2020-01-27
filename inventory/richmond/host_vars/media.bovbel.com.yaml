@@ -47,6 +47,8 @@ docker_compose:
       volumes:
         - "{{ app_folder }}/plex:/config"
         - "{{ media_folder }}:/mnt/storage/share:ro"
+      tmpfs:
+        - "/transcode"
       environment:
         - "PLEX_UID={{ uid }}"
         - "PLEX_GID={{ gid }}"
