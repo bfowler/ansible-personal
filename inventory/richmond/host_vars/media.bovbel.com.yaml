@@ -1,4 +1,51 @@
 ---
+ansible_user: pbovbel
+ansible_become_pass: !vault |
+  $ANSIBLE_VAULT;1.1;AES256
+  65383961633262653965396137356130343761346562336336326432323666383465393765663662
+  3536653038643831643736343734646337626430653464650a626661343665613364653938393661
+  36633737666564303639396431323338616132616235396135356434643964393761656236643666
+  3430316536656539660a383266653164383531393838653433313566613133363533306463366134
+  3933
+ansible_email: paul@bovbel.com
+
+admin_users:
+  - paul@bovbel.com
+
+share_users:
+  - andrew@bovbel.com
+  - deasonst@gmail.com
+  - eugene.tkach@gmail.com
+  - gamask@gmail.com
+  - igorlitvinov@gmail.com
+  - kyle.coventry@gmail.com
+  - rebecca@bovbel.com
+  - rustedghost@gmail.com
+  - ryan.audet@gmail.com
+  - victorvorobiev@gmail.com
+  - woodward.adam.m@gmail.com
+
+web_user: pbovbel
+web_password: !vault |
+  $ANSIBLE_VAULT;1.1;AES256
+  37636239323865633539653364323932306132363933343365346532363566366464363963383863
+  3939356464393138363532336565626261643262656466630a383938626531623138323136613461
+  30646464393363613932393933303262626264313063356464656232353864643430323734373630
+  3061656461643865640a643762626633646130666264373137386161653663303331646332343164
+  3931
+
+# Route53 DDNS configuration
+aws_ddns_hosted_zone: ZJMZZCLW5S6T9
+aws_access_key_id: AKIA2MCQ5AI3ATQ5HA75
+aws_secret_access_key: !vault |
+  $ANSIBLE_VAULT;1.1;AES256
+  63373362643230396364306438653862303664393361313861316265366661636438376430346637
+  3866336430396264653464303035656561346161313935650a333661383438666437363133336362
+  65316464363361323935626237393336363461353736303130653231663261343464356265623135
+  6565366466353064610a356435303432366532616236616331623332633461353535343864386230
+  30396232333537613339386131323238323066316533643137656331383036396631623063386665
+  3261356137353061343863346638326539643938323762323763
+
 # Useful paths
 data_folder: /mnt/storage
 app_folder: "{{ data_folder }}/app"
@@ -6,6 +53,8 @@ media_folder: "{{ data_folder }}/media"
 backup_folder: "{{ data_folder }}/backup"
 download_folder: "{{ media_folder }}/downloads"
 share_folder: "{{ media_folder }}"
+movies_folder: "{{ media_folder }}/movies"
+tv_folder: "{{ media_folder }}/tv"
 
 pia_username: p4418147
 pia_password: !vault |
@@ -55,84 +104,6 @@ docker_compose:
         - "TZ=America/Toronto"
         - ADVERTISE_IP=http://{{ ansible_default_ipv4.address }}:32400/
       restart: unless-stopped
-    jellyfin:
-      image: linuxserver/jellyfin
-      container_name: jellyfin
-      networks:
-        - apps
-      ports:
-        - 8096:8096
-      environment:
-        - "PLEX_UID={{ uid }}"
-        - "PLEX_GID={{ gid }}"
-        - "TZ=America/Toronto"
-      volumes:
-        - "{{ app_folder }}/jellyfin:/config"
-        - "{{ media_folder }}:/data:ro"
-      restart: unless-stopped
-    tautulli:
-      image: linuxserver/tautulli
-      container_name: tautulli
-      networks:
-        - apps
-      depends_on:
-        - plex
-      volumes:
-        - "{{ app_folder }}/tautulli:/config"
-        - "{{ app_folder }}/plex/Library/Application\ Support/Plex\ Media\ Server/Logs:/logs:ro"
-      restart: unless-stopped
-      environment:
-        - "PUID={{ uid }}"
-        - "PGID={{ gid }}"
-        - "TZ=America/Toronto"
-    sonarr:
-      image: linuxserver/sonarr
-      container_name: sonarr
-      networks:
-        - apps
-      depends_on:
-        - jackett
-      volumes:
-        - "{{ app_folder }}/sonarr:/config"
-        - "{{ backup_folder }}/apps/sonarr:/config/Backups"
-        - "{{ media_folder }}/tv:/tv"
-        - "{{ download_folder }}:/downloads"
-        - "/etc/localtime:/etc/localtime:ro"
-      restart: unless-stopped
-      environment:
-        - "PUID={{ uid }}"
-        - "PGID={{ gid }}"
-        - "TZ=America/Toronto"
-    radarr:
-      image: linuxserver/radarr
-      container_name: radarr
-      networks:
-        - apps
-      depends_on:
-        - jackett
-      volumes:
-        - "{{ app_folder }}/radarr:/config"
-        - "{{ backup_folder }}/apps/radarr:/config/Backups"
-        - "{{ media_folder }}/movies:/movies"
-        - "{{ download_folder }}:/downloads"
-        - /etc/localtime:/etc/localtime:ro
-      restart: unless-stopped
-      environment:
-        - "PUID={{ uid }}"
-        - "PGID={{ gid }}"
-        - "TZ=America/Toronto"
-    jackett:
-      image: linuxserver/jackett
-      container_name: jackett
-      networks:
-        - apps
-      volumes:
-        - "{{ app_folder }}/jackett:/config"
-      restart: unless-stopped
-      environment:
-        - "PUID={{ uid }}"
-        - "PGID={{ gid }}"
-        - "TZ=America/Toronto"
     transmission:
       container_name: transmission
       image: haugene/transmission-openvpn:latest
@@ -164,73 +135,34 @@ docker_compose:
         - "TRANSMISSION_DOWNLOAD_DIR=/downloads"
         - "TRANSMISSION_SCRIPT_TORRENT_DONE_ENABLED=true"
         - "TRANSMISSION_SCRIPT_TORRENT_DONE_FILENAME=/config/unpack.sh"
-    ombi:
-      image: linuxserver/ombi
-      container_name: ombi
+    jellyfin:
+      image: linuxserver/jellyfin
+      container_name: jellyfin
       networks:
         - apps
+      ports:
+        - 8096:8096
       environment:
-        - "PUID={{ uid }}"
-        - "PGID={{ gid }}"
+        - "PLEX_UID={{ uid }}"
+        - "PLEX_GID={{ gid }}"
         - "TZ=America/Toronto"
       volumes:
-        - "{{ app_folder }}/ombi:/config"
+        - "{{ app_folder }}/jellyfin:/config"
+        - "{{ media_folder }}:/data:ro"
       restart: unless-stopped
 
 caddy:
   endpoints:
-    radarr:
-      type: proxy
-      auth: oauth
-      path: /radarr
-      host: radarr
-      port: 7878
-      users: "{{ admin_users }}"
-
-    sonarr:
-      type: proxy
-      auth: oauth
-      path: /sonarr
-      host: sonarr
-      port: 8989
-      users: "{{ admin_users }}"
-
     jellyfin:
       type: proxy
       auth: null
-      # auth: oauth
       path: /jellyfin
       host: jellyfin
       port: 8096
       users: "{{ admin_users }}"
 
-    tautulli:
-      type: proxy
+    share:
+      type: share
       auth: oauth
-      path: /tautulli
-      host: tautulli
-      port: 8181
-      users: "{{ admin_users }}"
-
-    jackett:
-      type: proxy
-      auth: oauth
-      path: /jackett
-      host: jackett
-      port: 9117
-      users: "{{ admin_users }}"
-
-    ombi:
-      type: proxy
-      auth: null
-      path: /ombi
-      host: ombi
-      port: 3579
+      path: /share
       users: "{{ admin_users + share_users }}"
-
-    transmission:
-      type: proxy
-      auth: basic
-      path: /transmission
-      host: transmission
-      port: 9091

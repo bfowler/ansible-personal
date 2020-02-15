@@ -1,0 +1,56 @@
+---
+ansible_user: svedell
+ansible_become_pass: !vault |
+  $ANSIBLE_VAULT;1.1;AES256
+  37663338316633353361373364656462333863393539636165303937616233616635666237306533
+  6234313338623837643663626264346630656338613937310a343630646431303536653536623032
+  38313732643632346366333134623338326138656139326439616163343835633535353566616139
+  3339333337336439660a306532386239366562316133376663393365326464353533373164653534
+  3865
+
+admin_users:
+  - sean.vedell@gmail.com
+  - paul@bovbel.com
+
+web_user: svedell
+web_password: !vault |
+  $ANSIBLE_VAULT;1.1;AES256
+  37663338316633353361373364656462333863393539636165303937616233616635666237306533
+  6234313338623837643663626264346630656338613937310a343630646431303536653536623032
+  38313732643632346366333134623338326138656139326439616163343835633535353566616139
+  3339333337336439660a306532386239366562316133376663393365326464353533373164653534
+  3865
+
+# Useful paths
+data_folder: /mnt/nfs
+app_folder: /mnt/app
+movies_folder: "{{ data_folder }}/movies"
+tv_folder: "{{ data_folder }}/tv"
+music_folder: "{{ data_folder }}/music"
+download_folder: "{{ data_folder }}/download"
+
+iscsi_host: 192.168.50.139
+nfs_host: 192.168.50.139
+nfs_mounts:
+  - mount: "{{ movies_folder }}"
+    url: "{{ nfs_host }}:/Movies"
+  - mount: "{{ tv_folder }}"
+    url: "{{ nfs_host }}:/TV"
+  - mount: "{{ music_folder }}"
+    url: "{{ nfs_host }}:/Music"
+  - mount: "{{ download_folder }}"
+    url: "{{ nfs_host }}:/Download"
+
+docker_compose:
+  services:
+    ddclient:
+      container_name: ddclient
+      image: linuxserver/ddclient:latest
+      networks:
+        - apps
+      volumes:
+        - "{{ app_folder }}/ddclient:/config"
+      environment:
+        - "PUID={{ uid }}"
+        - "PGID={{ gid }}"
+        - "TZ=America/Toronto"
