@@ -8,6 +8,8 @@ ansible_become_pass: !vault |
   3339333337336439660a306532386239366562316133376663393365326464353533373164653534
   3865
 
+ansible_email: paul@bovbel.com
+
 admin_users:
   - sean.vedell@gmail.com
   - paul@bovbel.com
