@@ -7,7 +7,7 @@ gmail_access_key: !vault |
   65623566613737636639373439323564356138366535636433313932313865313033
 
 docker_compose:
-  version: '3.5'
+  version: '3.7'
   networks:
     apps:
       name: apps
@@ -30,4 +30,6 @@ docker_compose:
         - apps
       volumes:
         - /var/run/docker.sock:/var/run/docker.sock
-      restart: unless-stopped
+      restart: "no"
+
+docker_systemd_dir: /etc/docker/systemd

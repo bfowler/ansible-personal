@@ -103,7 +103,7 @@ docker_compose:
         - "PLEX_GID={{ gid }}"
         - "TZ=America/Toronto"
         - ADVERTISE_IP=http://{{ ansible_default_ipv4.address }}:32400/
-      restart: unless-stopped
+      restart: "no"
     transmission:
       container_name: transmission
       image: haugene/transmission-openvpn:latest
@@ -114,7 +114,7 @@ docker_compose:
       dns:
         - 8.8.8.8
         - 1.1.1.1
-      restart: unless-stopped
+      restart: "no"
       volumes:
         - "{{ app_folder }}/transmission/config:/config"
         - "{{ app_folder }}/transmission/home:/data/transmission-home"
@@ -149,7 +149,7 @@ docker_compose:
       volumes:
         - "{{ app_folder }}/jellyfin:/config"
         - "{{ media_folder }}:/data:ro"
-      restart: unless-stopped
+      restart: "no"
 
 caddy:
   endpoints:

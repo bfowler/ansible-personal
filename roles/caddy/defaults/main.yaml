@@ -45,7 +45,7 @@ docker_compose:
       ports:
         - 80:80
         - 443:443
-      restart: unless-stopped
+      restart: "no"
       volumes:
         - /etc/docker/Caddyfile:/etc/Caddyfile:ro
         - "{{ app_folder }}/caddy:/root/.caddy"

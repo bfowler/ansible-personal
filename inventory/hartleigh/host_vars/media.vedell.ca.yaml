@@ -29,7 +29,8 @@ app_folder: /mnt/app
 movies_folder: "{{ data_folder }}/movies"
 tv_folder: "{{ data_folder }}/tv"
 music_folder: "{{ data_folder }}/music"
-download_folder: "{{ data_folder }}/download"
+download_folder: "/mnt/downloads"
+share_folder: "{{ data_folder }}"
 
 iscsi_host: 192.168.50.139
 nfs_host: 192.168.50.139
@@ -40,8 +41,7 @@ nfs_mounts:
     url: "{{ nfs_host }}:/TV"
   - mount: "{{ music_folder }}"
     url: "{{ nfs_host }}:/Music"
-  - mount: "{{ download_folder }}"
-    url: "{{ nfs_host }}:/Download"
+
 
 docker_compose:
   services:
@@ -56,3 +56,32 @@ docker_compose:
         - "PUID={{ uid }}"
         - "PGID={{ gid }}"
         - "TZ=America/Toronto"
+      x-systemd-requires:
+        - mnt-app.mount
+    plex:
+      x-systemd-requires:
+        - mnt-app.mount
+        - mnt-downloads.mount
+        - mnt-nfs-movies.mount
+        - mnt-nfs-music.mount
+        - mnt-nfs-tv.mount
+    tautulli:
+      x-systemd-requires:
+        - mnt-app.mount
+    sonarr:
+      x-systemd-requires:
+        - mnt-app.mount
+        - mnt-downloads.mount
+        - mnt-nfs-tv.mount
+    radarr:
+      x-systemd-requires:
+        - mnt-app.mount
+        - mnt-downloads.mount
+        - mnt-nfs-movies.mount
+    jackett:
+      x-systemd-requires:
+        - mnt-app.mount
+    transmission:
+      x-systemd-requires:
+        - mnt-app.mount
+        - mnt-downloads.mount

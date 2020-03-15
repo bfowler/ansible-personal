@@ -45,7 +45,7 @@ docker_compose:
       network_mode: host
       volumes:
         - "{{ app_folder }}/unifi:/config"
-      restart: unless-stopped
+      restart: "no"
       environment:
         - "PUID={{ uid }}"
         - "PGID={{ gid }}"
