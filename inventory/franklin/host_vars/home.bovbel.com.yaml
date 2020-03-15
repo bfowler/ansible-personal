@@ -36,6 +36,7 @@ aws_secret_access_key: !vault |
 # Useful paths
 data_folder: "/home/{{ ansible_user }}"
 app_folder: "{{ data_folder }}/app"
+share_folder: "{{ data_folder }}/share"
 
 docker_compose:
   services:

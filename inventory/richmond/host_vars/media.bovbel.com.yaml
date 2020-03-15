@@ -22,6 +22,7 @@ share_users:
   - rebecca@bovbel.com
   - rustedghost@gmail.com
   - ryan.audet@gmail.com
+  - sean.vedell@gmail.com
   - victorvorobiev@gmail.com
   - woodward.adam.m@gmail.com
 
@@ -87,34 +88,18 @@ docker_compose:
         - "SES_FROM_ADDRESS={{ ansible_email }}"
         - "SES_TO_ADDRESS={{ ansible_email }}"
     plex:
-      image: plexinc/pms-docker:plexpass
-      container_name: plex
-      networks:
-        - apps
-      ports:
-        - 32400:32400
       volumes:
         - "{{ app_folder }}/plex:/config"
         - "{{ media_folder }}:/mnt/storage/share:ro"
-      tmpfs:
-        - "/transcode"
-      environment:
-        - "PLEX_UID={{ uid }}"
-        - "PLEX_GID={{ gid }}"
-        - "TZ=America/Toronto"
-        - ADVERTISE_IP=http://{{ ansible_default_ipv4.address }}:32400/
-      restart: "no"
     transmission:
-      container_name: transmission
       image: haugene/transmission-openvpn:latest
       cap_add:
         - NET_ADMIN
       networks:
         - apps
-      dns:
-        - 8.8.8.8
-        - 1.1.1.1
-      restart: "no"
+      # dns:
+      #   - 8.8.8.8
+      #   - 1.1.1.1
       volumes:
         - "{{ app_folder }}/transmission/config:/config"
         - "{{ app_folder }}/transmission/home:/data/transmission-home"
@@ -160,9 +145,3 @@ caddy:
       host: jellyfin
       port: 8096
       users: "{{ admin_users }}"
-
-    share:
-      type: share
-      auth: oauth
-      path: /share
-      users: "{{ admin_users + share_users }}"
