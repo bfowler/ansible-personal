@@ -29,7 +29,7 @@ app_folder: /mnt/app
 movies_folder: "{{ data_folder }}/movies"
 tv_folder: "{{ data_folder }}/tv"
 music_folder: "{{ data_folder }}/music"
-download_folder: "/mnt/downloads"
+downloads_folder: "/mnt/downloads"
 share_folder: "{{ data_folder }}"
 
 iscsi_host: 192.168.50.139

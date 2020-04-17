@@ -52,7 +52,7 @@ data_folder: /mnt/storage
 app_folder: "{{ data_folder }}/app"
 media_folder: "{{ data_folder }}/media"
 backup_folder: "{{ data_folder }}/backup"
-download_folder: "{{ data_folder }}/downloads"
+downloads_folder: "{{ data_folder }}/downloads"
 share_folder: "{{ media_folder }}"
 movies_folder: "{{ media_folder }}/movies"
 tv_folder: "{{ media_folder }}/tv"
@@ -100,7 +100,7 @@ docker_compose:
       volumes:
         - "{{ app_folder }}/transmission/config:/config"
         - "{{ app_folder }}/transmission/home:/data/transmission-home"
-        - "{{ download_folder }}:/downloads"
+        - "{{ downloads_folder }}:/downloads"
       environment:
         - "PUID={{ uid }}"
         - "PGID={{ gid }}"
