@@ -14,17 +14,17 @@ admin_users:
 
 share_users:
   - andrew@bovbel.com
-  - deasonst@gmail.com
-  - eugene.tkach@gmail.com
-  - gamask@gmail.com
+  # - deasonst@gmail.com
+  # - eugene.tkach@gmail.com
+  # - gamask@gmail.com
   - igorlitvinov@gmail.com
-  - kyle.coventry@gmail.com
-  - rebecca@bovbel.com
-  - rustedghost@gmail.com
-  - ryan.audet@gmail.com
-  - sean.vedell@gmail.com
-  - victorvorobiev@gmail.com
-  - woodward.adam.m@gmail.com
+  # - kyle.coventry@gmail.com
+  # - rebecca@bovbel.com
+  # - rustedghost@gmail.com
+  # - ryan.audet@gmail.com
+  # - sean.vedell@gmail.com
+  # - victorvorobiev@gmail.com
+  # - woodward.adam.m@gmail.com
 
 web_user: pbovbel
 web_password: !vault |
