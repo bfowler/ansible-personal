@@ -12,6 +12,7 @@ docker_compose:
     apps:
       name: apps
   services:
+    # TODO(pbovbel) fix SMTP server
     # smtp:
     #   container_name: smtp
     #   image: namshi/smtp
