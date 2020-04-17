@@ -35,10 +35,11 @@ google_oauth2_client_secret: !vault |
 docker_compose:
   services:
     caddy:
-      build:
-        args:
-          plugins: login,jwt
-        context: github.com/abiosoft/caddy-docker.git
+      # build:
+      #   args:
+      #     plugins: login,jwt
+      #   context: github.com/abiosoft/caddy-docker.git
+      image: paulbovbel/caddy:latest
       container_name: caddy
       networks:
         - apps
