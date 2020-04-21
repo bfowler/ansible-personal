@@ -32,8 +32,10 @@ music_folder: "{{ data_folder }}/music"
 downloads_folder: "/mnt/downloads"
 share_folder: "{{ data_folder }}"
 
-iscsi_host: 192.168.50.139
-nfs_host: 192.168.50.139
+iscsi_host: 192.168.50.203
+iscsi_lun: lun-1
+
+nfs_host: 192.168.50.203
 nfs_mounts:
   - mount: "{{ movies_folder }}"
     url: "{{ nfs_host }}:/Movies"
