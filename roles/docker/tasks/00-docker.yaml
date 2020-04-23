@@ -130,11 +130,6 @@
   shell: |
     systemctl enable {{ docker_systemd_dir }}/docker-{{ service.key }}.service && \
     systemctl start docker-{{ service.key }}.service
-  # (pbovbel): systemd module doesn't behave for units outside of /etc/systemd
-  # systemd:
-  #   name: "{{ docker_systemd_dir }}/{{ service.key }}.service"
-  #   enabled: true
-  #   state: started
   become: true
   loop: "{{ docker_compose.services | dict2items }}"
   loop_control:
