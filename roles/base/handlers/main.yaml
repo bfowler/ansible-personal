@@ -5,18 +5,6 @@
     state: restarted
   become: true
 
-- name: restart smartd
-  service:
-    name: smartd
-    state: restarted
-  become: true
-
-- name: restart zed
-  service:
-    name: zfs-zed
-    state: restarted
-  become: true
-
 - name: update-grub
   shell: update-grub
   become: true

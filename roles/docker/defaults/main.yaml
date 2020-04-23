@@ -1,36 +1,35 @@
 gmail_access_key: !vault |
-  $ANSIBLE_VAULT;1.1;AES256
-  32653332643230363831396636393963636661303435396637663237313131303032613362336465
-  3662653665643331623262323638653530343539306662610a303639356165376339623866653465
-  32383764653934316133303032353639633439336334363136633439623638356166666339633961
-  3339343933393930370a366435386331393564383632643661653134656636323764366265333535
-  65623566613737636639373439323564356138366535636433313932313865313033
+    $ANSIBLE_VAULT;1.1;AES256
+    31326230646131623434666263666337353164313934623664336236383438636139386136383339
+    3834656238333166656665613266333161643337353264660a353638636662353062633964396466
+    64333834633137393333663565363130653263373365383864373833663436616263393534363435
+    6337303233313230610a373038356366336330353731343463366130643064656637313434616136
+    6265
 
 docker_compose:
-  version: '3.7'
-  networks:
-    apps:
-      name: apps
-  services:
-    # TODO(pbovbel) fix SMTP server
-    # smtp:
-    #   container_name: smtp
-    #   image: namshi/smtp
-    #   networks:
-    #     - apps
-    #   ports:
-    #     - '25:25'
-    #   environment:
-    #     - "RELAY_NETWORKS=:10.0.0.0/8:172.16.0.0/12:192.168.0.0/16"
-    #     - "GMAIL_USER={{ ansible_email }}"
-    #     - "GMAIL_PASSWORD={{ gmail_access_key }}"
-    watchtower:
-      image: containrrr/watchtower
-      container_name: watchtower
-      networks:
-        - apps
-      volumes:
-        - /var/run/docker.sock:/var/run/docker.sock
-      restart: "no"
+    version: '3.7'
+    networks:
+        apps:
+            name: apps
+    services:
+        # smtp:
+        #   container_name: smtp
+        #   image: namshi/smtp
+        #   networks:
+        #     - apps
+        #   ports:
+        #     - '25:25'
+        #   environment:
+        #     - "RELAY_NETWORKS=:10.0.0.0/8:172.16.0.0/12:192.168.0.0/16"
+        #     - "GMAIL_USER={{ ansible_email }}"
+        #     - "GMAIL_PASSWORD={{ gmail_access_key }}"
+        watchtower:
+            image: containrrr/watchtower
+            container_name: watchtower
+            networks:
+                - apps
+            volumes:
+                - /var/run/docker.sock:/var/run/docker.sock
+            restart: "no"
 
 docker_systemd_dir: /etc/docker/systemd

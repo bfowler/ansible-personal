@@ -1,1 +1,4 @@
 localhost ansible_connection=local
+
+[media_server]
+media.rjf.ca

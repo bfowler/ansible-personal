@@ -1,0 +1,110 @@
+---
+ansible_user: bfowler
+ansible_become_pass: !vault |
+    $ANSIBLE_VAULT;1.1;AES256
+    64646237663933366137313232616238376132336362336562383639323031666530396130626433
+    3362396164313335643637393463313163326663653338340a353266643430613532656131653433
+    63323534363265306465356533326265363331646639663330323063373738306434366464643865
+    3764383932313230370a343965346537353162363065343831343464306638656163633539646134
+    3836
+ansible_email: bob@rjf.ca
+
+admin_users:
+    - bob@rjf.ca
+
+share_users:
+    - karley@rjf.ca
+    - rcf@rjf.ca
+    - bj@rjf.ca
+    - mary@rfox.ca
+    - rick@rfox.ca
+    - sean.vedell@gmail.com
+
+web_user: bfowler
+web_password: !vault |
+    $ANSIBLE_VAULT;1.1;AES256
+    38333637613331613736353934313961323237396235366130306631353039306536316430636432
+    3730636233303065306364633335393564656431306536610a363165393839303234383731333064
+    66303933666232363265383138666139323537376463633766303939656631323563386236366639
+    3162303061323732320a396337623561303038636366373239393634653863656531633630306661
+    6234
+
+# Useful paths
+data_folder: /mnt/storage
+app_folder: "{{ data_folder }}/app"
+media_folder: "{{ data_folder }}/media"
+backup_folder: "{{ data_folder }}/backup"
+download_folder: "{{ media_folder }}/downloads"
+share_folder: "{{ media_folder }}"
+movies_folder: "{{ media_folder }}/media/movies"
+tv_folder: "{{ media_folder }}/media/tv"
+
+nordvpn_username: bob@rjf.ca
+nordvpn_password: !vault |
+    $ANSIBLE_VAULT;1.1;AES256
+    33666230323661613165626334356264366361316563373735653038663631363466313633313435
+    3165336438303731326261386231313563613933323531380a306563643864313361306266386261
+    31323864616436323533646533343539643430356230663930613835616337373439646563313632
+    3038383137353762310a633632616166646565336261666638613531366166396138356263383930
+    3761
+
+docker_compose:
+  services:
+    plex:
+      volumes:
+        - "{{ app_folder }}/plex:/config"
+        - "{{ media_folder }}:/mnt/storage/share:ro"
+    transmission:
+        image: haugene/transmission-openvpn:latest
+        cap_add:
+            - NET_ADMIN
+        networks:
+            - apps
+        # dns:
+        #   - 8.8.8.8
+        #   - 1.1.1.1
+        volumes:
+            - "{{ app_folder }}/transmission/config:/config"
+            - "{{ app_folder }}/transmission/home:/data/transmission-home"
+            - "{{ download_folder }}:/downloads"
+        environment:
+            - "PUID={{ uid }}"
+            - "PGID={{ gid }}"
+            - "TZ=America/Toronto"
+            - "WEBPROXY_ENABLED=false"
+            - "LOCAL_NETWORK=172.26.0.0/16"
+            - "OPENVPN_PROVIDER=NORDVPN"
+            - "OPENVPN_CONFIG=CA\ Toronto"
+            - "OPENVPN_USERNAME={{ nordvpn_username }}"
+            - "OPENVPN_PASSWORD={{ nordvpn_password }}"
+            - "CREATE_TUN_DEVICE=true"
+            - "TRANSMISSION_INCOMPLETE_DIR_ENABLED=false"
+            - "TRANSMISSION_WATCH_DIR=/downloads/watch"
+            - "TRANSMISSION_DOWNLOAD_DIR=/downloads"
+            - "TRANSMISSION_SCRIPT_TORRENT_DONE_ENABLED=true"
+            - "TRANSMISSION_SCRIPT_TORRENT_DONE_FILENAME=/config/unpack.sh"
+    jellyfin:
+        image: linuxserver/jellyfin
+        container_name: jellyfin
+        networks:
+            - apps
+        ports:
+            - 8096:8096
+        environment:
+            - "PLEX_UID={{ uid }}"
+            - "PLEX_GID={{ gid }}"
+            - "TZ=America/Toronto"
+        volumes:
+            - "{{ app_folder }}/jellyfin:/config"
+            - "{{ media_folder }}:/data:ro"
+        restart: "no"
+
+caddy:
+    endpoints:
+        jellyfin:
+        type: proxy
+        auth: null
+        path: /jellyfin
+        host: jellyfin
+        port: 8096
+        users: "{{ admin_users }}"

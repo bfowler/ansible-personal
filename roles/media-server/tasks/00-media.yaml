@@ -1,11 +1,4 @@
 ---
-# TODO(pbovbel) stop only the necessary containers
-# - name: stop docker
-#   service:
-#     name: docker
-#     state: stopped
-#   become: true
-
 - name: configure jackett basepath
   replace:
     path: "{{ app_folder }}/jackett/Jackett/ServerConfig.json"
@@ -42,11 +35,3 @@
     regexp: '"rpc-host-whitelist-enabled": true,'
     replace: '"rpc-host-whitelist-enabled": false,'
   ignore_errors: true
-
-# - name: start docker
-#   service:
-#     name: docker
-#     state: started
-#   become: true
-
-# TODO(pbovbel) unpack.sh?
