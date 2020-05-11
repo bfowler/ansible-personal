@@ -68,8 +68,8 @@ tv_folder: "{{ media_folder }}/TV"
 
 nfs_host: 10.0.0.5
 nfs_mounts:
-    - mount: "{{ data_folder }}"
-        url: "{{ nfs_host }}:{{ data_folder }}"
+  - mount: "{{ data_folder }}"
+    url: "{{ nfs_host }}:{{ data_folder }}"
 
 nordvpn_username: bob@rjf.ca
 nordvpn_password: !vault |
