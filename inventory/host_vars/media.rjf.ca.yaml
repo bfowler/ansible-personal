@@ -57,9 +57,9 @@ gmail_access_key: !vault |
     33633230646530613462653936633864356631363432333331363162303564623866
 
 # Useful paths
-data_folder: /mnt/Tank
+data_folder: /mnt/Primary_Data
 app_folder: "{{ data_folder }}/app"
-media_folder: "{{ data_folder }}/Media"
+media_folder: "{{ data_folder }}/media"
 backup_folder: "{{ data_folder }}/backup"
 download_folder: "{{ data_folder }}/downloads"
 share_folder: "{{ media_folder }}"

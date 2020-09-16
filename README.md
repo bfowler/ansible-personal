@@ -4,7 +4,7 @@
 
 ```
 sudo apt update
-sudo apt install -y git python3-pip python3-venv
+sudo apt install -y git python3-pip python3-venv python3-wheel
 git clone https://github.com/bfowler/ansible-personal.git
 cd ansible-personal
 
