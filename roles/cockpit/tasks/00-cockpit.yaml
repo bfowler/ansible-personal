@@ -5,7 +5,7 @@
     - cockpit
     - cockpit-bridge
     - cockpit-dashboard
-    - cockpit-docker
+    - cockpit-podman
     - cockpit-networkmanager
     - cockpit-packagekit
     - cockpit-pcp
