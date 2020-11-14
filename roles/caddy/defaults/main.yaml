@@ -1,28 +1,29 @@
-admin_users: []
-share_users: []
 
 docker_compose:
-    services:
-        caddy:
-            container_name: caddy
-            image: caddy
-            networks:
-                - apps
-            ports:
-                - 80:80
-                - 443:443
-            restart: "no"
-            volumes:
-                - /etc/docker/Caddyfile:/etc/Caddyfile:ro
-                - "{{ app_folder }}/caddy:/root/.caddy"
-                - "{{ app_folder }}/caddy/log:/log"
-                - "{{ share_folder }}:/srv/share:ro"
+  services:
+    caddy:
+      image: paulbovbel/caddy:2.2.1
+      container_name: caddy
+      networks:
+        - apps
+      ports:
+        - 80:80
+        - 443:443
+      restart: "no"
+      volumes:
+        - /etc/docker/Caddyfile:/etc/caddy/Caddyfile:ro
+        - "{{ app_folder }}/caddy/data:/data"
+        - "{{ app_folder }}/caddy/config:/config"
+        - "{{ share_folder }}:/share:ro"
 
 caddy:
-    endpoints:
-        share:
-            type: share
-            auth: oauth
-            path: /share
-            users: "{{ admin_users + share_users | default([]) }}"
-    remotes: {}
+  users: []
+  endpoints:
+    share:
+      type: share
+      auth: oauth
+      path: /share
+      roles:
+        - share
+  remotes: {}
+  token_secret: "{{ lookup('password', '/dev/null chars=ascii_letters,digits') | to_uuid }}"

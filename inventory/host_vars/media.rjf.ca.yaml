@@ -9,17 +9,6 @@ ansible_become_pass: !vault |
     6661
 ansible_email: bob@rjf.ca
 
-admin_users:
-    - bob@rjf.ca
-
-share_users:
-    - karley@rjf.ca
-    - rcf@rjf.ca
-    - bj@rjf.ca
-    - mary@rfox.ca
-    - rick@rfox.ca
-    - sean.vedell@gmail.com
-
 web_user: bfowler
 web_password: !vault |
     $ANSIBLE_VAULT;1.1;AES256
@@ -117,11 +106,14 @@ docker_compose:
             - "TRANSMISSION_SCRIPT_TORRENT_DONE_FILENAME=/config/unpack.sh"
 
 caddy:
-    endpoints:
-        jellyfin:
-            type: proxy
-            auth: null
-            path: /jellyfin
-            host: jellyfin
-            port: 8096
-            users: "{{ admin_users }}"
+  users:
+    - name: bob@rjf.ca
+      roles: ['admin', 'share']
+  endpoints:
+    jellyfin:
+      type: proxy
+      auth: null
+      path: /jellyfin
+      host: jellyfin
+      port: 8096
+      roles: ['admin']

@@ -9,6 +9,7 @@
   roles:
     - base
     - cockpit
+    - caddy
     - media-server
 
 - hosts:
@@ -20,7 +21,6 @@
         upgrade: dist
         force: true
       become: true
-
     - name: clean apt
       shell: apt-get autoremove --purge -y && apt-get clean
       become: true

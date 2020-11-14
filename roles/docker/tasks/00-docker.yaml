@@ -18,7 +18,7 @@
       - docker-ce
       - docker-ce-cli
       - containerd.io
-        #      - cockpit-docker
+      - python3-docker
     state: latest
     update_cache: true
     cache_valid_time: 3600
