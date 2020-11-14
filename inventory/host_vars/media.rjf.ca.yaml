@@ -60,16 +60,19 @@ gmail_access_key: !vault |
 data_folder: /mnt/Primary_Data
 app_folder: "{{ data_folder }}/app"
 media_folder: "{{ data_folder }}/media"
-backup_folder: "{{ data_folder }}/backup"
 download_folder: "{{ data_folder }}/downloads"
 share_folder: "{{ media_folder }}"
 movies_folder: "{{ media_folder }}/Movies"
 tv_folder: "{{ media_folder }}/TV"
 
-nfs_host: 10.0.0.5
+nfs_host: 10.0.0.5 
 nfs_mounts:
-  - mount: "{{ data_folder }}"
-    url: "{{ nfs_host }}:{{ data_folder }}"
+  - mount: "{{ app_folder }}"
+    url: "{{ nfs_host }}:{{ app_folder }}"
+  - mount: "{{ media_folder }}"
+    url: "{{ nfs_host }}:{{ media_folder }}"
+  - mount: "{{ download_folder }}"
+    url: "{{ nfs_host }}:{{ download_folder }}"
 
 nordvpn_username: bob@rjf.ca
 nordvpn_password: !vault |
@@ -112,21 +115,6 @@ docker_compose:
             - "TRANSMISSION_DOWNLOAD_DIR=/downloads"
             - "TRANSMISSION_SCRIPT_TORRENT_DONE_ENABLED=true"
             - "TRANSMISSION_SCRIPT_TORRENT_DONE_FILENAME=/config/unpack.sh"
-    jellyfin:
-        image: linuxserver/jellyfin
-        container_name: jellyfin
-        networks:
-            - apps
-        ports:
-            - 8096:8096
-        environment:
-            - "PLEX_UID={{ uid }}"
-            - "PLEX_GID={{ gid }}"
-            - "TZ=America/Toronto"
-        volumes:
-            - "{{ app_folder }}/jellyfin:/config"
-            - "{{ media_folder }}:/data:ro"
-        restart: "no"
 
 caddy:
     endpoints:

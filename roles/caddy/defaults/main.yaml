@@ -4,11 +4,8 @@ share_users: []
 docker_compose:
     services:
         caddy:
-            build:
-                args:
-                plugins: login,jwt
-                context: github.com/abiosoft/caddy-docker.git
             container_name: caddy
+            image: caddy
             networks:
                 - apps
             ports:

@@ -1,7 +1,7 @@
 ---
 - name: configure jackett basepath
   replace:
-    path: "{{ app_folder }}/jackett/Jackett/ServerConfig.json"
+    path: "{{ app_folder }}/jackett/ServerConfig.json"
     regexp: '"BasePathOverride": ".*",'
     replace: '"BasePathOverride": "/jackett",'
 
