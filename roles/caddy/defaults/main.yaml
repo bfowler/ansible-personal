@@ -12,8 +12,8 @@ docker_compose:
       restart: "no"
       volumes:
         - /etc/docker/Caddyfile:/etc/caddy/Caddyfile:ro
-        - "{{ app_folder }}/caddy/data:/data"
-        - "{{ app_folder }}/caddy/config:/config"
+        - "{{ app_folder }}/caddy/data:/data/caddy"
+        - "{{ app_folder }}/caddy/config:/config/caddy"
         - "{{ share_folder }}:/share:ro"
 
 caddy:

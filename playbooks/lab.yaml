@@ -22,5 +22,7 @@
         force: true
       become: true
     - name: clean apt
-      shell: apt-get autoremove --purge -y && apt-get clean
+      apt:
+        autoremove: yes
+        purge: yes
       become: true
