@@ -9,11 +9,11 @@ docker_compose:
       ports:
         - 80:80
         - 443:443
-      restart: "no"
+      restart: "unless-stopped"
       volumes:
         - /etc/docker/Caddyfile:/etc/caddy/Caddyfile:ro
-        - "{{ app_folder }}/caddy/data:/data/caddy"
-        - "{{ app_folder }}/caddy/config:/config/caddy"
+        - "{{ app_folder }}/caddy/data:/data"
+        - "{{ app_folder }}/caddy/config:/config"
         - "{{ share_folder }}:/share:ro"
 
 caddy:
@@ -23,7 +23,6 @@ caddy:
       type: share
       auth: oauth
       path: /share
-      roles:
-        - share
+      roles: ['admin']
   remotes: {}
   token_secret: "{{ lookup('password', '/dev/null chars=ascii_letters,digits') | to_uuid }}"
