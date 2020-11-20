@@ -86,6 +86,7 @@
   shell: |
     cd /etc/docker &&
     docker-compose pull && docker-compose up --no-color --quiet-pull --no-deps --no-start --remove-orphans --build
+  ignore_errors: yes
   become: true
 
 - name: increase number of watches
