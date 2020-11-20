@@ -1,4 +1,18 @@
 ---
+- name: make sure media group exists
+  group:
+    name: "media"
+    state: present
+    gid: 8675309
+  become: true
+
+- name: add ansible user to media group
+  user:
+    name: "{{ ansible_user }}"
+    groups: "media"
+    append: true
+  become: true
+ 
 - name: configure jackett basepath
   replace:
     path: "{{ app_folder }}/jackett/ServerConfig.json"
