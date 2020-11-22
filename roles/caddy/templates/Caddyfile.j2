@@ -37,7 +37,13 @@
 }
 
 127.0.0.1, localhost, {{ inventory_hostname }} {
-
+  log {
+      level ERROR
+      format console {
+        time_format wall
+      }
+      output file /data/log/error.log
+  }
 {% if caddy.redirect is defined %}
   redir / {{ caddy.redirect }}
 {% endif %}
@@ -50,6 +56,7 @@
         static_secret {
           token_name access_token
           token_secret {{ caddy.token_secret }}
+          token_lifetime 3600
         }
       }
     }
