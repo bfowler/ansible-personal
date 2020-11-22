@@ -60,18 +60,23 @@
 {% for endpoint in caddy.endpoints.values() %}
   redir {{ endpoint.path }} {{ endpoint.path }}/
 
-  {% if endpoint.auth == "basic" %}
-    basicauth {{ endpoint.path }}* {
-      {{ endpoint.user }} {{ endpoint.password | password_hash('bcrypt') | b64encode }}
-    }
+  {% if endpoint.auth is defined %}
+    {% if endpoint.auth == "basic" %}
+      basicauth {{ endpoint.path }}* {
+        {{ endpoint.user }} {{ endpoint.password | password_hash('bcrypt') | b64encode }}
+      }
+    {% endif %}
   {% endif %}
 
   route {{ endpoint.path }}* {
-  {% if endpoint.auth == "oauth" %}
-    jwt {
-      allow roles {{ endpoint.roles | join (' ') }}
-    }
-  {% endif %}
+  
+    {% if endpoint.auth is defined %}
+      {% if endpoint.auth == "oauth" %}
+        jwt {
+          allow roles {{ endpoint.roles | join (' ') }}
+        }
+      {% endif %}
+    {% endif %}
 
   {% if endpoint.type == "proxy" %}
     reverse_proxy * {{ endpoint.scheme | default('http') }}://{{ endpoint.host }}:{{ endpoint.port }}
@@ -90,29 +95,32 @@
 {% for remote in caddy.remotes.values() %}
 
 {{ remote.host }}.{{ remote.domain }} {
-
-  {% if remote.auth == "basic" %}
-  basicauth /* {
-    {{ remote.user }} {{ remote.password | password_hash('bcrypt') | b64encode }}
-  }
+  {% if remote.auth is defined %}
+    {% if remote.auth == "basic" %}
+    basicauth /* {
+      {{ remote.user }} {{ remote.password | password_hash('bcrypt') | b64encode }}
+    }
+    {% endif %}
   {% endif %}
 
   route /* {
 
-  {% if remote.auth == "oauth" %}
-    jwt {
-      primary yes
-      context {{ remote.host }}
-      auth_url /auth
-      trusted_tokens {
-        static_secret {
-          token_name access_token
-          token_secret {{ caddy.token_secret }}
+    {% if remote.auth is defined %}
+      {% if remote.auth == "oauth" %}
+        jwt {
+          primary yes
+          context {{ remote.host }}
+          auth_url /auth
+          trusted_tokens {
+            static_secret {
+              token_name access_token
+              token_secret {{ caddy.token_secret }}
+            }
+          }
+          allow roles {{ remote.roles | join (' ') }}
         }
-      }
-      allow roles {{ remote.roles | join (' ') }}
-    }
-  {% endif %}
+      {% endif %}
+    {% endif %}
     reverse_proxy * {{ remote.scheme | default('http') }}://{{ remote.host }}:{{ remote.port }} {
       {% if remote.scheme | default('http') == "https" %}
       transport http {

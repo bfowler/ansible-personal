@@ -135,14 +135,12 @@ caddy:
             domain: rjf.ca
             scheme: http
             port: 32400
-            roles: ['admin']
 
         nzbget:
             host: nzbget
             domain: rjf.ca
             scheme: http
             port: 6789
-            roles: ['admin']
 
     endpoints:
         radarr:
