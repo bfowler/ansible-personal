@@ -1,0 +1,29 @@
+
+docker_compose:
+  services:
+    pihole:
+      image: pihole/pihole:latest
+      container_name: pihole
+      networks:
+        - apps
+      ports:
+        - "53:53/tcp"
+        - "53:53/udp"
+        - "67:67/udp"
+      volumes:
+        - "{{ app_folder }}/pihole/:/etc/pihole/"
+        - "{{ app_folder }}/pihole/dnsmasq.d/:/etc/dnsmasq.d/"
+      environment:
+        - "TZ=America/Toronto"
+        - "WEBPASSWORD={{ web_password }}"
+      restart: "unless-stopped"
+
+caddy:
+  endpoints:
+    pihole:
+      type: proxy
+      auth: oauth
+      path: /pihole
+      host: pihole
+      port: 80
+      roles: ['admin']

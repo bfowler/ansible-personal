@@ -15,14 +15,14 @@ docker_compose:
                 - "{{ tv_folder }}:/media/TV"
                 - "{{ music_folder }}:/media/Music"
             tmpfs:
-                - "/transcode"
+                    - "/transcode:uid={{ uid }},gid={{ media_gid }}"
             environment:
                 - "PLEX_UID={{ uid }}"
-                - "PLEX_GID={{ gid }}"
+                - "PLEX_GID={{ media_gid }}"
                 - "TZ=America/Toronto"
             devices:
                 - /dev/dri:/dev/dri
-            entrypoint: /bin/sh -c "chmod o+rw /dev/dri/renderD128 && /init"
+            entrypoint: /bin/sh -c "if [ -d /dev/dri ]; then chmod 755 /dev/dri && chmod 666 /dev/dri/*; fi; /init"
             restart: "unless-stopped"
         tautulli:
             image: linuxserver/tautulli
@@ -141,6 +141,8 @@ caddy:
             domain: rjf.ca
             scheme: http
             port: 6789
+            auth: oauth
+            roles: ['admin']
 
     endpoints:
         radarr:

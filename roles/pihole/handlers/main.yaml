@@ -1,0 +1,5 @@
+---
+- name: restart pihole
+  shell:
+    docker restart pihole
+  become: true

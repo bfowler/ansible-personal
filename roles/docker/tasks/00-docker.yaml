@@ -85,9 +85,11 @@
 - name: configure containers
   shell: |
     cd /etc/docker &&
-    docker-compose pull && docker-compose up --no-color --quiet-pull --no-deps --no-start --remove-orphans --build
-  ignore_errors: yes
+    docker login -u {{ docker_user }} -p {{ docker_password }} &&
+    docker-compose pull &&
+    docker-compose up --no-color --quiet-pull --no-deps --no-start --remove-orphans --build
   become: true
+  ignore_errors: yes
 
 - name: increase number of watches
   sysctl:

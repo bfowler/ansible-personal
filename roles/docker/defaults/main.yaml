@@ -18,10 +18,12 @@ docker_compose:
         watchtower:
             image: containrrr/watchtower
             container_name: watchtower
+            environment:
+                - "WATCHTOWER_SCHEDULE=0 0 4 * * *"
             networks:
                 - apps
             volumes:
                 - /var/run/docker.sock:/var/run/docker.sock
-            restart: "no"
+            restart: "unless-stopped"
 
 docker_systemd_dir: /etc/docker/systemd

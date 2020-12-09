@@ -27,6 +27,16 @@
     name: America/Toronto
   become: true
 
+- name: install nvidia drivers
+  apt:
+    name:
+      - nvidia-headless-450
+      - nvidia-utils-450
+    state: latest
+    update_cache: true
+    cache_valid_time: 3600
+  become: true
+
 - name: install stuff
   apt:
     name:

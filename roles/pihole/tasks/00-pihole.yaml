@@ -1,0 +1,21 @@
+---
+- name: disable stub resolver
+  replace:
+    path: '/etc/systemd/resolved.conf' 
+    regexp: '#?DNSStubListener=yes'
+    replace: 'DNSStubListener=no'
+  ignore_errors: true
+  become: truesystemctl restart systemd-resolved
+
+- name: change resolv.conf symlink
+  file:
+    src: /run/systemd/resolve/resolv.conf 
+    dest: /etc/resolv.conf
+    state: link
+  become: true
+
+- name: restart systemd-resolved
+  service:
+    name: systemd-resolved
+    state: restarted
+  become: true

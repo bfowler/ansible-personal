@@ -37,7 +37,7 @@
       [caddy-basic-auth]
       enabled  = true
       port     = http,https
-      logpath  = {{ app_folder }}/caddy/log/error.log
+      logpath  = {{ app_folder }}/caddy/data/log/error.log
     state: present
     create: true
   become: true
