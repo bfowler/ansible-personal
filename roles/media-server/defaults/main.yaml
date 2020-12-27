@@ -14,8 +14,7 @@ docker_compose:
                 - "{{ movies_folder }}:/media/Movies"
                 - "{{ tv_folder }}:/media/TV"
                 - "{{ music_folder }}:/media/Music"
-            tmpfs:
-                    - "/transcode:uid={{ uid }},gid={{ media_gid }}"
+                - "{{ transcode_folder }}:/transcode"
             environment:
                 - "PLEX_UID={{ uid }}"
                 - "PLEX_GID={{ media_gid }}"

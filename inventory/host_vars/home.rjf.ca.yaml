@@ -59,6 +59,7 @@ data_folder: /mnt/Primary_Data
 app_folder: "{{ data_folder }}/app"
 media_folder: "{{ data_folder }}/media"
 download_folder: "{{ data_folder }}/downloads"
+transcode_folder: "{{ data_folder }}/transcode"
 share_folder: "{{ media_folder }}"
 movies_folder: "{{ media_folder }}/videos/Movies"
 tv_folder: "{{ media_folder }}/videos/TV"
@@ -72,6 +73,8 @@ nfs_mounts:
     url: "{{ nfs_host }}:{{ media_folder }}"
   - mount: "{{ download_folder }}"
     url: "{{ nfs_host }}:{{ download_folder }}"
+  - mount: "{{ transcode_folder }}"
+    url: "{{ nfs_host }}:{{ transcode_folder }}"
 
 nordvpn_username: bob@rjf.ca
 nordvpn_password: !vault |
