@@ -13,6 +13,38 @@
     append: true
   become: true
  
+
+- name: add NVIDIA apt signing key
+  apt_key:
+    url: https://nvidia.github.io/nvidia-docker/gpgkey
+    state: present
+  become: true
+
+- name: add  NVIDIA repository into sources list
+  get_url:
+    url: https://nvidia.github.io/nvidia-docker/{{ ansible_distribution | lower }}{{ ansible_distribution_version }}/nvidia-docker.list
+    dest: /etc/apt/sources.list.d/nvidia-docker.list
+    owner: root
+    group: root
+    mode: 0644
+  become: true
+
+- name: install nvidia-docker2
+  apt: 
+    name: nvidia-docker2
+    state: latest
+    update_cache: true 
+    cache_valid_time: 3600
+  register: nvidia_docker_apt
+  become: true
+
+- name: reload Docker configuration
+  service: 
+    name: docker
+    state: reloaded
+  when: nvidia_docker_apt.changed == True
+  become: true
+
 - name: configure jackett basepath
   replace:
     path: "{{ app_folder }}/jackett/ServerConfig.json"

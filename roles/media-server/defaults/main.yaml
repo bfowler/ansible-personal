@@ -18,6 +18,9 @@ docker_compose:
             environment:
                 - "PLEX_UID={{ uid }}"
                 - "PLEX_GID={{ media_gid }}"
+                - "NVIDIA_DRIVER_CAPABILITIES=compute,video,utility"
+                - "NVIDIA_VISIBLE_DEVICES=all"
+                - "CUDA_DRIVER_CAPABILITIES=compute,video,utility"
                 - "TZ=America/Toronto"
             devices:
                 - /dev/dri:/dev/dri
