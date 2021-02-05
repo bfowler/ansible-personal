@@ -24,8 +24,6 @@ docker_compose:
                 - "TZ=America/Toronto"
             devices:
                 - /dev/dri:/dev/dri
-            entrypoint: /bin/sh -c "if [ -d /dev/dri ]; then chmod 755 /dev/dri && chmod 666 /dev/dri/*; fi; /init"
-            restart: "unless-stopped"
         tautulli:
             image: linuxserver/tautulli
             container_name: tautulli
@@ -36,7 +34,6 @@ docker_compose:
             volumes:
                 - "{{ app_folder }}/tautulli:/config"
                 - "{{ app_folder }}/plex/Library/Application\ Support/Plex\ Media\ Server/Logs:/logs:ro"
-            restart: "unless-stopped"
             environment:
                 - "PUID={{ uid }}"
                 - "PGID={{ media_gid }}"
@@ -53,7 +50,6 @@ docker_compose:
                 - "{{ app_folder }}/sonarr:/config"
                 - "{{ tv_folder }}:/tv"
                 - "{{ download_folder }}:/downloads"
-            restart: "unless-stopped"
             environment:
                 - "PUID={{ uid }}"
                 - "PGID={{ media_gid }}"
@@ -70,7 +66,6 @@ docker_compose:
                 - "{{ app_folder }}/radarr:/config"
                 - "{{ movies_folder }}:/movies"
                 - "{{ download_folder }}:/downloads"
-            restart: "unless-stopped"
             environment:
                 - "PUID={{ uid }}"
                 - "PGID={{ media_gid }}"
@@ -82,7 +77,6 @@ docker_compose:
                 - apps
             volumes:
                 - "{{ app_folder }}/jackett:/config"
-            restart: "unless-stopped"
             environment:
                 - "PUID={{ uid }}"
                 - "PGID={{ media_gid }}"
@@ -100,7 +94,6 @@ docker_compose:
                 - "PUID={{ uid }}"
                 - "PGID={{ media_gid }}"
                 - "TZ=America/Toronto"
-            restart: "unless-stopped" 
         transmission:
             image: haugene/transmission-openvpn
             container_name: transmission
@@ -110,7 +103,6 @@ docker_compose:
                 - apps
             ports:
                 - 51413:51413
-            restart: "unless-stopped"
             volumes:
                 - "{{ app_folder }}/transmission/config:/config"
                 - "{{ app_folder }}/transmission/data:/data"

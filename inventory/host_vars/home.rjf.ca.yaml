@@ -56,7 +56,7 @@ gmail_access_key: !vault |
 
 # Useful paths
 data_folder: /mnt/Primary_Data
-app_folder: "{{ data_folder }}/app"
+app_folder: /mnt/local/app 
 media_folder: "{{ data_folder }}/media"
 download_folder: "{{ data_folder }}/downloads"
 transcode_folder: "{{ data_folder }}/transcode"

@@ -29,6 +29,20 @@
     mode: 0644
   become: true
 
+
+- name: install nvidia drivers
+  apt:
+    name:
+      - nvidia-headless-455
+      - nvidia-utils-455
+      - libnvidia-compute-455
+      - libnvidia-encode-455
+      - libnvidia-decode-455
+    state: latest
+    update_cache: true
+    cache_valid_time: 3600
+  become: true
+
 - name: install nvidia-docker2
   apt: 
     name: nvidia-docker2
